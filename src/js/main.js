@@ -1,12 +1,15 @@
 window.addEventListener("DOMContentLoaded", () => {
-    const tabs = document.querySelectorAll(".tabheader__item"),
-        parent = document.querySelector(".tabheader__items"),
-        tabContainers = document.querySelectorAll(".tabcontent"),
-        timer = document.querySelector('.timer'),
-        days = timer.querySelector('#days'),
-        hours = timer.querySelector('#hours'),
-        minutes = timer.querySelector('#minutes'),
-        seconds = timer.querySelector('#seconds');
+  const tabs = document.querySelectorAll(".tabheader__item"),
+    parent = document.querySelector(".tabheader__items"),
+    tabContainers = document.querySelectorAll(".tabcontent"),
+    timer = document.querySelector('.timer'),
+    days = timer.querySelector('#days'),
+    hours = timer.querySelector('#hours'),
+    minutes = timer.querySelector('#minutes'),
+    seconds = timer.querySelector('#seconds'),
+    close = document.querySelector('[data-close]'),
+    modalBtn = document.querySelectorAll('[data-modal'),
+    modal = document.querySelector('.modal');
 
   ////tabs
   const tabsHandler = () => {
@@ -83,7 +86,48 @@ window.addEventListener("DOMContentLoaded", () => {
 
     }
     
-///
-    tabsHandler();
-    setTimer()
+///modals
+  const modalsHandler = (modalBtn, modal, close) => {
+    let timeout = setTimeout(onOpen, 3000)
+    function onOpen() {
+      modal.classList.toggle('show')
+      clearTimeout(timeout)
+      document.body.style.overflow = "hidden";
+    }
+    function onClose() {
+      modal.classList.toggle('show')
+      document.body.style.overflow = 'auto'
+
+    }
+
+    modalBtn.forEach((el) => {
+      el.addEventListener('click', () => {
+        onOpen()
+      })
+    })
+
+    modal.addEventListener('click', (e) => {
+      let target = e.target
+      if (target = close || target.classList.contains('show')) {
+        onClose()
+      }
+    })
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape' && modal.classList.contains('show')) {
+        onClose()
+      }
+    })
+
+    function onBottomScroll() {
+      if (window.pageYOffset + document.documentElement.clientHeight === document.documentElement.scrollHeight) {
+        onOpen()
+        window.removeEventListener("scroll", onBottomScroll);
+  }
+}
+window.addEventListener('scroll', onBottomScroll)
+  }
+  
+  tabsHandler();
+  setTimer()
+  modalsHandler(modalBtn, modal, close);
 });
