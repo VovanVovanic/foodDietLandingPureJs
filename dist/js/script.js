@@ -97,14 +97,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tabheader__item"),
         parent = document.querySelector(".tabheader__items"),
         tabContainers = document.querySelectorAll(".tabcontent"),
-        timer = document.querySelector('.timer'),
-        days = timer.querySelector('#days'),
-        hours = timer.querySelector('#hours'),
-        minutes = timer.querySelector('#minutes'),
-        seconds = timer.querySelector('#seconds'),
-        close = document.querySelector('[data-close]'),
-        modalBtn = document.querySelectorAll('[data-modal'),
-        modal = document.querySelector('.modal'); ////tabs
+        timer = document.querySelector(".timer"),
+        days = timer.querySelector("#days"),
+        hours = timer.querySelector("#hours"),
+        minutes = timer.querySelector("#minutes"),
+        seconds = timer.querySelector("#seconds"),
+        close = document.querySelector("[data-close]"),
+        modalBtn = document.querySelectorAll("[data-modal"),
+        modal = document.querySelector(".modal"); ////tabs
 
   const tabsHandler = () => {
     const hideContent = (content, cls) => {
@@ -145,7 +145,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
   const setTimer = () => {
-    const deadline = '2021-08-08';
+    const deadline = "2021-08-08";
 
     const getTimeRemaining = endTimer => {
       let time = Date.parse(endTimer) - Date.parse(new Date()),
@@ -190,30 +190,30 @@ window.addEventListener("DOMContentLoaded", () => {
     let timeout = setTimeout(onOpen, 3000);
 
     function onOpen() {
-      modal.classList.toggle('show');
+      modal.classList.toggle("show");
       clearTimeout(timeout);
       document.body.style.overflow = "hidden";
     }
 
     function onClose() {
-      modal.classList.toggle('show');
-      document.body.style.overflow = 'auto';
+      modal.classList.toggle("show");
+      document.body.style.overflow = "auto";
     }
 
     modalBtn.forEach(el => {
-      el.addEventListener('click', () => {
+      el.addEventListener("click", () => {
         onOpen();
       });
     });
-    modal.addEventListener('click', e => {
+    modal.addEventListener("click", e => {
       let target = e.target;
 
-      if (target = close || target.classList.contains('show')) {
+      if (target = close || target.classList.contains("show")) {
         onClose();
       }
     });
-    document.addEventListener('keydown', e => {
-      if (e.code === 'Escape' && modal.classList.contains('show')) {
+    document.addEventListener("keydown", e => {
+      if (e.code === "Escape" && modal.classList.contains("show")) {
         onClose();
       }
     });
@@ -225,9 +225,55 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    window.addEventListener('scroll', onBottomScroll);
-  };
+    window.addEventListener("scroll", onBottomScroll);
+  }; ///render menu
 
+
+  class RenderMenu {
+    constructor(src, alt, title, descr, price, parentNode, ...classes) {
+      this.src = src;
+      this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.price = price;
+      this.parent = document.querySelector(parentNode);
+      this.classes = classes;
+      this.currencyTransfer = 0.87;
+      this.priceToEU();
+    }
+
+    priceToEU() {
+      this.price = this.price * this.currencyTransfer;
+    }
+
+    render() {
+      const elem = document.createElement("div");
+
+      if (!this.classes.length) {
+        const initClass = "menu__item";
+        elem.classList.add(initClass);
+      } else {
+        this.classes.forEach(cls => elem.classList.add(cls));
+      }
+
+      elem.innerHTML = `
+                    <img src=${this.src}alt=${this.alt}>
+                    <h3 class="menu__item-subtitle">${this.title}</h3>
+                    <div class="menu__item-descr">${this.descr}</div>
+                    <div class="menu__item-divider"></div>
+                    <div class="menu__item-price">
+                        <div class="menu__item-cost">Цена:</div>
+                        <div class="menu__item-total"><span>${this.price.toFixed(2)}</span> EU/день</div>
+                    </div>
+                      `;
+      this.parent.append(elem);
+    }
+
+  }
+
+  new RenderMenu("img/tabs/vegy.jpg ", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 10, '.menu .container').render();
+  new RenderMenu("img/tabs/elite.jpg ", "elite", "Меню “Премиум”", "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!", 14, ".menu .container").render();
+  new RenderMenu("img/tabs/post.jpg ", "post", 'Меню "Постное"', "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.", 7, ".menu .container").render();
   tabsHandler();
   setTimer();
   modalsHandler(modalBtn, modal, close);
