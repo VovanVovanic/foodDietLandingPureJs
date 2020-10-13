@@ -103,8 +103,9 @@ window.addEventListener("DOMContentLoaded", () => {
         minutes = timer.querySelector("#minutes"),
         seconds = timer.querySelector("#seconds"),
         close = document.querySelector("[data-close]"),
-        modalBtn = document.querySelectorAll("[data-modal"),
-        modal = document.querySelector(".modal"); ////tabs
+        modalBtn = document.querySelectorAll("[data-modal]"),
+        modal = document.querySelector(".modal"),
+        forms = document.querySelectorAll('form'); ////tabs
 
   const tabsHandler = () => {
     const hideContent = (content, cls) => {
@@ -186,20 +187,22 @@ window.addEventListener("DOMContentLoaded", () => {
   }; ///modals
 
 
+  let timeout = setTimeout(onOpen, 3000);
+
+  function onOpen() {
+    modal.classList.add("show");
+    modal.classList.remove("hide");
+    clearTimeout(timeout);
+    document.body.style.overflow = "hidden";
+  }
+
+  function onClose() {
+    modal.classList.add("hide");
+    modal.classList.remove("show");
+    document.body.style.overflow = "auto";
+  }
+
   const modalsHandler = (modalBtn, modal, close) => {
-    let timeout = setTimeout(onOpen, 3000);
-
-    function onOpen() {
-      modal.classList.toggle("show");
-      clearTimeout(timeout);
-      document.body.style.overflow = "hidden";
-    }
-
-    function onClose() {
-      modal.classList.toggle("show");
-      document.body.style.overflow = "auto";
-    }
-
     modalBtn.forEach(el => {
       el.addEventListener("click", () => {
         onOpen();
@@ -208,7 +211,7 @@ window.addEventListener("DOMContentLoaded", () => {
     modal.addEventListener("click", e => {
       let target = e.target;
 
-      if (target = close || target.classList.contains("show")) {
+      if (target === close || target === modal) {
         onClose();
       }
     });
@@ -257,7 +260,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       elem.innerHTML = `
-                    <img src=${this.src}alt=${this.alt}>
+                    <img src=${this.src} alt=${this.alt}>
                     <h3 class="menu__item-subtitle">${this.title}</h3>
                     <div class="menu__item-descr">${this.descr}</div>
                     <div class="menu__item-divider"></div>
@@ -271,12 +274,98 @@ window.addEventListener("DOMContentLoaded", () => {
 
   }
 
-  new RenderMenu("img/tabs/vegy.jpg ", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 10, '.menu .container').render();
-  new RenderMenu("img/tabs/elite.jpg ", "elite", "Меню “Премиум”", "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!", 14, ".menu .container").render();
-  new RenderMenu("img/tabs/post.jpg ", "post", 'Меню "Постное"', "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.", 7, ".menu .container").render();
+  const onMenuBuild = async url => {
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error(`Couldnt fetch to ${res.url}`);
+    }
+
+    return await res.json();
+  };
+
+  onMenuBuild("https://foodlanding-ebb10.firebaseio.com/db/menu.json").then(data => {
+    data.forEach(({
+      altimg,
+      descr,
+      img,
+      price,
+      title
+    }) => {
+      console.log(img);
+      new RenderMenu(img, altimg, title, descr, price, ".menu .container").render();
+    });
+  }); ////forms
+
+  const formHandler = myForms => {
+    const message = {
+      loading: 'img/spinner.svg',
+      success: function (name) {
+        return `Thank for your order, ${name}. We ll call your back as soon as possible`;
+      },
+      error: 'An error appeared'
+    };
+
+    const postForm = async (url, formData) => {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: formData
+      });
+      return await res.json();
+    };
+
+    myForms.forEach(form => {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        let spinner = document.createElement('img');
+        spinner.src = message.loading;
+        spinner.style.cssText = `
+        margin: 0 auto;
+        display: block
+        `;
+        form.insertAdjacentElement('afterend', spinner);
+        const formData = new FormData(form);
+        const formObj = {};
+        formData.forEach((key, val) => {
+          formObj[val] = key;
+        });
+        postForm("https://foodlanding-ebb10.firebaseio.com/db/requests.json", JSON.stringify(formObj)).then(data => {
+          spinner.remove();
+          onMessageHandler(message.success(formObj.name));
+          form.reset();
+        }).catch(e => {
+          onMessageHandler(message.error);
+        });
+      });
+    });
+
+    function onMessageHandler(msg) {
+      const prevModal = document.querySelector('.modal__dialog');
+      prevModal.classList.add('hide');
+      onOpen();
+      const textMsg = document.createElement('div');
+      textMsg.classList.add('modal__dialog');
+      textMsg.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__title">${msg}</div>
+            </div>
+      `;
+      document.querySelector('.modal').append(textMsg);
+      setTimeout(() => {
+        prevModal.classList.remove('hide');
+        textMsg.remove();
+        onClose();
+      }, 3000);
+    }
+  };
+
   tabsHandler();
   setTimer();
   modalsHandler(modalBtn, modal, close);
+  formHandler(forms);
 });
 
 /***/ })
