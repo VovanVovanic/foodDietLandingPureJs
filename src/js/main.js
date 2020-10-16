@@ -10,7 +10,9 @@ window.addEventListener("DOMContentLoaded", () => {
     close = document.querySelector("[data-close]"),
     modalBtn = document.querySelectorAll("[data-modal]"),
     modal = document.querySelector(".modal"),
-    forms = document.querySelectorAll('form');
+    forms = document.querySelectorAll("form"),
+    slider = document.querySelector(".offer__slider");
+
 
   ////tabs
   const tabsHandler = () => {
@@ -262,10 +264,117 @@ function onClose() {
   }
   }
 
+/// slider 
+  const sliderHandler = (slider) => {
+        
+    const sliderWrapper = slider.querySelector(".offer__slider-wrapper"),
+      sliderContainer = slider.querySelector(".offer__slider-container"),
+      slides = slider.querySelectorAll(".offer__slide"),
+      prev = slider.querySelector(".offer__slider-prev"),
+      next = slider.querySelector(".offer__slider-next"),
+      current = slider.querySelector("#current"),
+      total = slider.querySelector("#total"),
+      width = window.getComputedStyle(sliderWrapper).width;
+    
+    
+sliderContainer.style.width = 100 * slides.length + '%' 
+  slides.forEach((slide) => {
+   slide.style.width = width
+ })
+    let offset = 0,
+      slideNumber = 1; 
+    if (slides.length < 10) {
+      total.textContent = `0${slides.length}`
+      current.textContent = `0${slideNumber}`
+    }
+    else {
+       total.textContent = slides.length ;
+       current.textContent = slideNumber;
+    }
+    const currentIndicatorHandler = (current,slideNumber) => {
+      if (slideNumber < 10) {
+        current.textContent = `0${slideNumber}`;
+      }
+      else {
+        current.textContent = slideNumber;
+      }
+    }
 
+    const moveTo = (container, offset) => {     
+    container.style.transform = `translateX(-${offset}px)`
+    } 
+    const dotArr = []
+    for (i = 0; i < slides.length; i++) {
+      const dot = document.createElement('li');
+      dot.classList.add('dot')
+      if (i == 0) {
+        dot.classList.add('dot-active')
+      }
+      dot.setAttribute('data-dot', i + 1)
+      document.querySelector(".carousel-indicators").append(dot);
+      dotArr.push(dot)
+    }
+
+    const activeDot = (arr, slideNumber) => {
+      arr.forEach((el) => {
+        el.classList.remove('dot-active')
+        arr[slideNumber-1].classList.add('dot-active')
+      })
+    }
+    
+    next.addEventListener('click', () => {
+      if (offset == parseInt(width) * (slides.length - 1)) {
+       offset = 0
+      } else {
+        offset += parseInt(width); 
+      }
+      if (slideNumber == slides.length) {
+        slideNumber = 1
+      }
+      else {
+        slideNumber++
+      }
+      currentIndicatorHandler (current, slideNumber);
+      moveTo(sliderContainer, offset)
+      activeDot(dotArr, slideNumber)
+    })
+
+
+    prev.addEventListener('click', () => {
+      if (offset == 0) {
+        offset = parseInt(width) * (slides.length - 1);
+      }
+      else {
+        offset -= parseInt(width);
+      }
+      if (slideNumber == 1) {
+        slideNumber = slides.length
+      }
+      else {
+        slideNumber --
+      }
+      currentIndicatorHandler(current, slideNumber);
+      moveTo(sliderContainer, offset);
+      activeDot(dotArr, slideNumber);
+    })
+
+    dotArr.forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        let target = e.target.getAttribute('data-dot')
+        slideNumber = target
+        offset = parseInt(width) * (target-1)
+        activeDot(dotArr, slideNumber);
+        currentIndicatorHandler(current, slideNumber);
+        moveTo(sliderContainer, offset);
+      })
+    })
+  }
+  
+  
   tabsHandler();
   setTimer();
   modalsHandler(modalBtn, modal, close);
   formHandler(forms)
+  sliderHandler(slider)
 });
 
