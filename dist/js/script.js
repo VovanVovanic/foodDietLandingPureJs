@@ -300,11 +300,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const formHandler = myForms => {
     const message = {
-      loading: 'img/spinner.svg',
+      loading: "img/spinner.svg",
       success: function (name) {
         return `Thank for your order, ${name}. We ll call your back as soon as possible`;
       },
-      error: 'An error appeared'
+      error: "An error appeared"
     };
 
     const postForm = async (url, formData) => {
@@ -319,15 +319,15 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     myForms.forEach(form => {
-      form.addEventListener('submit', e => {
+      form.addEventListener("submit", e => {
         e.preventDefault();
-        let spinner = document.createElement('img');
+        let spinner = document.createElement("img");
         spinner.src = message.loading;
         spinner.style.cssText = `
         margin: 0 auto;
         display: block
         `;
-        form.insertAdjacentElement('afterend', spinner);
+        form.insertAdjacentElement("afterend", spinner);
         const formData = new FormData(form);
         const formObj = {};
         formData.forEach((key, val) => {
@@ -344,24 +344,24 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     function onMessageHandler(msg) {
-      const prevModal = document.querySelector('.modal__dialog');
-      prevModal.classList.add('hide');
+      const prevModal = document.querySelector(".modal__dialog");
+      prevModal.classList.add("hide");
       onOpen();
-      const textMsg = document.createElement('div');
-      textMsg.classList.add('modal__dialog');
+      const textMsg = document.createElement("div");
+      textMsg.classList.add("modal__dialog");
       textMsg.innerHTML = `
             <div class="modal__content">
                 <div class="modal__title">${msg}</div>
             </div>
       `;
-      document.querySelector('.modal').append(textMsg);
+      document.querySelector(".modal").append(textMsg);
       setTimeout(() => {
-        prevModal.classList.remove('hide');
+        prevModal.classList.remove("hide");
         textMsg.remove();
         onClose();
       }, 3000);
     }
-  }; /// slider 
+  }; /// slider
 
 
   const sliderHandler = slider => {
@@ -373,7 +373,7 @@ window.addEventListener("DOMContentLoaded", () => {
           current = slider.querySelector("#current"),
           total = slider.querySelector("#total"),
           width = window.getComputedStyle(sliderWrapper).width;
-    sliderContainer.style.width = 100 * slides.length + '%';
+    sliderContainer.style.width = 100 * slides.length + "%";
     slides.forEach(slide => {
       slide.style.width = width;
     });
@@ -403,26 +403,26 @@ window.addEventListener("DOMContentLoaded", () => {
     const dotArr = [];
 
     for (i = 0; i < slides.length; i++) {
-      const dot = document.createElement('li');
-      dot.classList.add('dot');
+      const dot = document.createElement("li");
+      dot.classList.add("dot");
 
       if (i == 0) {
-        dot.classList.add('dot-active');
+        dot.classList.add("dot-active");
       }
 
-      dot.setAttribute('data-dot', i + 1);
+      dot.setAttribute("data-dot", i + 1);
       document.querySelector(".carousel-indicators").append(dot);
       dotArr.push(dot);
     }
 
     const activeDot = (arr, slideNumber) => {
       arr.forEach(el => {
-        el.classList.remove('dot-active');
-        arr[slideNumber - 1].classList.add('dot-active');
+        el.classList.remove("dot-active");
+        arr[slideNumber - 1].classList.add("dot-active");
       });
     };
 
-    next.addEventListener('click', () => {
+    next.addEventListener("click", () => {
       if (offset == parseInt(width) * (slides.length - 1)) {
         offset = 0;
       } else {
@@ -439,7 +439,7 @@ window.addEventListener("DOMContentLoaded", () => {
       moveTo(sliderContainer, offset);
       activeDot(dotArr, slideNumber);
     });
-    prev.addEventListener('click', () => {
+    prev.addEventListener("click", () => {
       if (offset == 0) {
         offset = parseInt(width) * (slides.length - 1);
       } else {
@@ -457,8 +457,8 @@ window.addEventListener("DOMContentLoaded", () => {
       activeDot(dotArr, slideNumber);
     });
     dotArr.forEach(dot => {
-      dot.addEventListener('click', e => {
-        let target = e.target.getAttribute('data-dot');
+      dot.addEventListener("click", e => {
+        let target = e.target.getAttribute("data-dot");
         slideNumber = target;
         offset = parseInt(width) * (target - 1);
         activeDot(dotArr, slideNumber);
@@ -466,8 +466,109 @@ window.addEventListener("DOMContentLoaded", () => {
         moveTo(sliderContainer, offset);
       });
     });
+  }; /// calculator
+
+
+  const res = document.querySelector(".calculating__result span");
+  let gender, height, weight, age, ratio;
+
+  if (localStorage.getItem("gender") && localStorage.getItem("ratio")) {
+    gender = localStorage.getItem("gender");
+    ratio = localStorage.getItem("ratio");
+  } else {
+    gender = "female", ratio = "1.375", localStorage.setItem("ratio", 1.375);
+    localStorage.setItem("gender", "female");
+  }
+
+  const initialActiveClass = (selector, activeClass) => {
+    const elem = document.querySelectorAll(`${selector} div`);
+    elem.forEach(el => {
+      el.classList.remove(activeClass);
+
+      if (el.getAttribute("id") === localStorage.getItem("gender")) {
+        el.classList.add(activeClass);
+      }
+
+      if (el.getAttribute("data-ratio") === localStorage.getItem("ratio")) {
+        el.classList.add(activeClass);
+      }
+    });
   };
 
+  initialActiveClass("#gender", "calculating__choose-item_active");
+  initialActiveClass(".calculating__choose_big", "calculating__choose-item_active");
+
+  const getTotal = () => {
+    if (!gender || !height || !weight || !age || !ratio) {
+      res.textContent = "....";
+      return;
+    }
+
+    if (gender === "female") {
+      res.textContent = Math.round((447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio);
+    } else {
+      res.textContent = Math.round((88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio);
+    }
+  };
+
+  function getStatic(parent, active) {
+    const elements = document.querySelectorAll(`${parent} div`);
+    document.querySelector(parent).addEventListener("click", e => {
+      let target = e.target;
+
+      if (target.getAttribute("data-ratio")) {
+        ratio = +target.getAttribute("data-ratio");
+        localStorage.setItem("ratio", +target.getAttribute("data-ratio"));
+      } else {
+        gender = target.getAttribute("id");
+        localStorage.setItem("gender", target.getAttribute("id"));
+      }
+
+      if (target.getAttribute("data-ratio") || target.getAttribute("id") !== "gender") {
+        elements.forEach(el => {
+          el.classList.remove(active);
+        });
+        target.classList.add(active);
+      }
+
+      getTotal();
+    });
+  }
+
+  function getDynamic(selector) {
+    const input = document.querySelector(selector);
+    input.addEventListener("input", e => {
+      const data = e.target.getAttribute("id");
+
+      switch (data) {
+        case "weight":
+          {
+            weight = parseInt(e.target.value);
+          }
+          break;
+
+        case "age":
+          {
+            age = parseInt(e.target.value);
+          }
+          break;
+
+        case "height":
+          {
+            height = parseInt(e.target.value);
+          }
+      }
+
+      getTotal();
+    });
+  }
+
+  getDynamic("#height");
+  getDynamic("#age");
+  getDynamic("#weight");
+  getStatic("#gender", "calculating__choose-item_active");
+  getStatic(".calculating__choose_big", "calculating__choose-item_active");
+  getTotal();
   tabsHandler();
   setTimer();
   modalsHandler(modalBtn, modal, close);
