@@ -3,38 +3,7 @@
 window.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tabheader__item"),
     parent = document.querySelector(".tabheader__items"),
-<<<<<<< HEAD
     tabsContent = document.querySelectorAll(".tabcontent");
-=======
-    tabContainers = document.querySelectorAll(".tabcontent"),
-    timer = document.querySelector(".timer"),
-    days = timer.querySelector("#days"),
-    hours = timer.querySelector("#hours"),
-    minutes = timer.querySelector("#minutes"),
-    seconds = timer.querySelector("#seconds"),
-    close = document.querySelector("[data-close]"),
-    modalBtn = document.querySelectorAll("[data-modal]"),
-    modal = document.querySelector(".modal"),
-    forms = document.querySelectorAll("form"),
-    slider = document.querySelector(".offer__slider");
-
-  ////tabs
-  const tabsHandler = () => {
-    const hideContent = (content, cls) => {
-      content.forEach((el) => {
-        el.classList.add("tabcontent_disabled");
-        el.classList.remove("fade");
-      });
-      cls.forEach((el) => {
-        el.classList.remove("tabheader__item_active");
-      });
-    };
-    const showContent = (content, cls, i = 0) => {
-      content[i].classList.remove("tabcontent_disabled");
-      content[i].classList.add("tabcontent_active", "fade");
-      cls[i].classList.add("tabheader__item_active");
-    };
->>>>>>> aca02a441d51913d5b2ec964fb21bbf795b901b4
 
   const hideContent = (content, cls) => {
     content.forEach((el) => {
@@ -97,7 +66,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     updateClock();
 
-<<<<<<< HEAD
     function getNull(el) {
       if (el >= 0 && el < 10) {
         return `0${el}`;
@@ -134,24 +102,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const onModalHandler = (trigger, close, modal) => {
     // let timeout = setTimeout(onOpen, 3000);
     trigger.forEach((el) => {
-=======
-  ///modals
-
-  let timeout = setTimeout(onOpen, 3000);
-  function onOpen() {
-    modal.classList.add("show");
-    modal.classList.remove("hide");
-    clearTimeout(timeout);
-    document.body.style.overflow = "hidden";
-  }
-  function onClose() {
-    modal.classList.add("hide");
-    modal.classList.remove("show");
-    document.body.style.overflow = "auto";
-  }
-  const modalsHandler = (modalBtn, modal, close) => {
-    modalBtn.forEach((el) => {
->>>>>>> aca02a441d51913d5b2ec964fb21bbf795b901b4
       el.addEventListener("click", () => {
         onOpen();
       });
@@ -208,257 +158,18 @@ window.addEventListener("DOMContentLoaded", () => {
         );
       }
       elem.innerHTML = `
-<<<<<<< HEAD
                     
-=======
->>>>>>> aca02a441d51913d5b2ec964fb21bbf795b901b4
                     <img src=${this.src} alt=${this.alt}>
                     <h3 class="menu__item-subtitle">${this.title}</h3>
                     <div class="menu__item-descr">${this.descr}</div>
                     <div class="menu__item-divider"></div>
                     <div class="menu__item-price">
-<<<<<<< HEAD
                         <div class="menu__item-cost">Price:</div>
                         <div class="menu__item-total"><span>${this.price.toFixed(2)}</span> EU/daily</div>
                     </div>
                
       `;
       this.parent.append(elem);
-=======
-                        <div class="menu__item-cost">Цена:</div>
-                        <div class="menu__item-total"><span>${this.price.toFixed(
-                          2
-                        )}</span> EU/день</div>
-                    </div>
-                      `;
-      this.parent.append(elem);
-    }
-  }
-
-  const onMenuBuild = async (url) => {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`Couldnt fetch to ${res.url}`);
-    }
-
-    return await res.json();
-  };
-  onMenuBuild("https://foodlanding-ebb10.firebaseio.com/db/menu.json").then(
-    (data) => {
-      data.forEach(({ altimg, descr, img, price, title }) => {
-        console.log(img);
-        new RenderMenu(
-          img,
-          altimg,
-          title,
-          descr,
-          price,
-          ".menu .container"
-        ).render();
-      });
-    }
-  );
-
-  ////forms
-  const formHandler = (myForms) => {
-    const message = {
-      loading: "img/spinner.svg",
-      success: function (name) {
-        return `Thank for your order, ${name}. We ll call your back as soon as possible`;
-      },
-      error: "An error appeared",
-    };
-    const postForm = async (url, formData) => {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: formData,
-      });
-      return await res.json();
-    };
-    myForms.forEach((form) => {
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        let spinner = document.createElement("img");
-        spinner.src = message.loading;
-        spinner.style.cssText = `
-        margin: 0 auto;
-        display: block
-        `;
-        form.insertAdjacentElement("afterend", spinner);
-        const formData = new FormData(form);
-        const formObj = {};
-        formData.forEach((key, val) => {
-          formObj[val] = key;
-        });
-        postForm(
-          "https://foodlanding-ebb10.firebaseio.com/db/requests.json",
-          JSON.stringify(formObj)
-        )
-          .then((data) => {
-            spinner.remove();
-            onMessageHandler(message.success(formObj.name));
-            form.reset();
-          })
-          .catch((e) => {
-            onMessageHandler(message.error);
-          });
-      });
-    });
-    function onMessageHandler(msg) {
-      const prevModal = document.querySelector(".modal__dialog");
-      prevModal.classList.add("hide");
-      onOpen();
-      const textMsg = document.createElement("div");
-      textMsg.classList.add("modal__dialog");
-      textMsg.innerHTML = `
-            <div class="modal__content">
-                <div class="modal__title">${msg}</div>
-            </div>
-      `;
-      document.querySelector(".modal").append(textMsg);
-      setTimeout(() => {
-        prevModal.classList.remove("hide");
-        textMsg.remove();
-        onClose();
-      }, 3000);
-    }
-  };
-
-  /// slider
-  const sliderHandler = (slider) => {
-    const sliderWrapper = slider.querySelector(".offer__slider-wrapper"),
-      sliderContainer = slider.querySelector(".offer__slider-container"),
-      slides = slider.querySelectorAll(".offer__slide"),
-      prev = slider.querySelector(".offer__slider-prev"),
-      next = slider.querySelector(".offer__slider-next"),
-      current = slider.querySelector("#current"),
-      total = slider.querySelector("#total"),
-      width = window.getComputedStyle(sliderWrapper).width;
-
-    sliderContainer.style.width = 100 * slides.length + "%";
-    slides.forEach((slide) => {
-      slide.style.width = width;
-    });
-    let offset = 0,
-      slideNumber = 1;
-    if (slides.length < 10) {
-      total.textContent = `0${slides.length}`;
-      current.textContent = `0${slideNumber}`;
-    } else {
-      total.textContent = slides.length;
-      current.textContent = slideNumber;
-    }
-    const currentIndicatorHandler = (current, slideNumber) => {
-      if (slideNumber < 10) {
-        current.textContent = `0${slideNumber}`;
-      } else {
-        current.textContent = slideNumber;
-      }
-    };
-
-    const moveTo = (container, offset) => {
-      container.style.transform = `translateX(-${offset}px)`;
-    };
-    const dotArr = [];
-    for (i = 0; i < slides.length; i++) {
-      const dot = document.createElement("li");
-      dot.classList.add("dot");
-      if (i == 0) {
-        dot.classList.add("dot-active");
-      }
-      dot.setAttribute("data-dot", i + 1);
-      document.querySelector(".carousel-indicators").append(dot);
-      dotArr.push(dot);
-    }
-
-    const activeDot = (arr, slideNumber) => {
-      arr.forEach((el) => {
-        el.classList.remove("dot-active");
-        arr[slideNumber - 1].classList.add("dot-active");
-      });
-    };
-
-    next.addEventListener("click", () => {
-      if (offset == parseInt(width) * (slides.length - 1)) {
-        offset = 0;
-      } else {
-        offset += parseInt(width);
-      }
-      if (slideNumber == slides.length) {
-        slideNumber = 1;
-      } else {
-        slideNumber++;
-      }
-      currentIndicatorHandler(current, slideNumber);
-      moveTo(sliderContainer, offset);
-      activeDot(dotArr, slideNumber);
-    });
-
-    prev.addEventListener("click", () => {
-      if (offset == 0) {
-        offset = parseInt(width) * (slides.length - 1);
-      } else {
-        offset -= parseInt(width);
-      }
-      if (slideNumber == 1) {
-        slideNumber = slides.length;
-      } else {
-        slideNumber--;
-      }
-      currentIndicatorHandler(current, slideNumber);
-      moveTo(sliderContainer, offset);
-      activeDot(dotArr, slideNumber);
-    });
-
-    dotArr.forEach((dot) => {
-      dot.addEventListener("click", (e) => {
-        let target = e.target.getAttribute("data-dot");
-        slideNumber = target;
-        offset = parseInt(width) * (target - 1);
-        activeDot(dotArr, slideNumber);
-        currentIndicatorHandler(current, slideNumber);
-        moveTo(sliderContainer, offset);
-      });
-    });
-  };
-
-  /// calculator
-  const res = document.querySelector(".calculating__result span");
-  let gender, height, weight, age, ratio;
-  if (localStorage.getItem("gender") && localStorage.getItem("ratio")) {
-    gender = localStorage.getItem("gender");
-    ratio = localStorage.getItem("ratio");
-  } else {
-    (gender = "female"),
-      (ratio = "1.375"),
-      localStorage.setItem("ratio", 1.375);
-    localStorage.setItem("gender", "female");
-  }
-  const initialActiveClass = (selector, activeClass) => {
-    const elem = document.querySelectorAll(`${selector} div`);
-
-    elem.forEach((el) => {
-      el.classList.remove(activeClass);
-      if (el.getAttribute("id") === localStorage.getItem("gender")) {
-        el.classList.add(activeClass);
-      }
-      if (el.getAttribute("data-ratio") === localStorage.getItem("ratio")) {
-        el.classList.add(activeClass);
-      }
-    });
-  };
-  initialActiveClass("#gender", "calculating__choose-item_active");
-  initialActiveClass(
-    ".calculating__choose_big",
-    "calculating__choose-item_active"
-  );
-
-  const getTotal = () => {
-    if (!gender || !height || !weight || !age || !ratio) {
-      res.textContent = "....";
-      return;
->>>>>>> aca02a441d51913d5b2ec964fb21bbf795b901b4
     }
     if (gender === "female") {
       res.textContent = Math.round(
