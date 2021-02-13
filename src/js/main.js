@@ -171,42 +171,8 @@ window.addEventListener("DOMContentLoaded", () => {
       `;
       this.parent.append(elem);
     }
-    if (gender === "female") {
-      res.textContent = Math.round(
-        (447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio
-      );
-    } else {
-      res.textContent = Math.round(
-        (88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio
-      );
-    }
-  };
-  function getStatic(parent, active) {
-    const elements = document.querySelectorAll(`${parent} div`);
-
-    document.querySelector(parent).addEventListener("click", (e) => {
-      let target = e.target;
-      if (target.getAttribute("data-ratio")) {
-        ratio = +target.getAttribute("data-ratio");
-        localStorage.setItem("ratio", +target.getAttribute("data-ratio"));
-      } else {
-        gender = target.getAttribute("id");
-        localStorage.setItem("gender", target.getAttribute("id"));
-      }
-      if (
-        target.getAttribute("data-ratio") ||
-        target.getAttribute("id") !== "gender"
-      ) {
-        elements.forEach((el) => {
-          el.classList.remove(active);
-        });
-        target.classList.add(active);
-      }
-      getTotal();
-    });
   }
 
-<<<<<<< HEAD
   new MenuCard(
     "img/tabs/vegy.jpg",
     "vegy",
@@ -524,40 +490,4 @@ window.addEventListener("DOMContentLoaded", () => {
 
   onModalHandler(modalBtn, closeBtn, modal);
   setTime(".timer", deadline);
-=======
-  function getDynamic(selector) {
-    const input = document.querySelector(selector);
-    input.addEventListener("input", (e) => {
-      const data = e.target.getAttribute("id");
-      switch (data) {
-        case "weight":
-          {
-            weight = parseInt(e.target.value);
-          }
-          break;
-        case "age":
-          {
-            age = parseInt(e.target.value);
-          }
-          break;
-        case "height": {
-          height = parseInt(e.target.value);
-        }
-      }
-      getTotal();
-    });
-  }
-
-  getDynamic("#height");
-  getDynamic("#age");
-  getDynamic("#weight");
-  getStatic("#gender", "calculating__choose-item_active");
-  getStatic(".calculating__choose_big", "calculating__choose-item_active");
-  getTotal();
-  tabsHandler();
-  setTimer();
-  modalsHandler(modalBtn, modal, close);
-  formHandler(forms);
-  sliderHandler(slider);
->>>>>>> aca02a441d51913d5b2ec964fb21bbf795b901b4
 });
